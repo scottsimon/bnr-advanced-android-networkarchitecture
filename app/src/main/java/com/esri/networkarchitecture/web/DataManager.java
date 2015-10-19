@@ -54,8 +54,8 @@ public class DataManager {
   private static final String TEST_LAT_LNG = "33.759,-84.332";
 
   private static DataManager sDataManager;
+  private static TokenStore sTokenStore;
   private Context mContext;
-  private static TokenStore mTokenStore;
   private RestAdapter mBasicRestAdapter;
   private RestAdapter mAuthenticatedRestAdapter;
   private List<Venue> mVenueList;
@@ -64,7 +64,7 @@ public class DataManager {
 
   protected DataManager(Context context, RestAdapter basicRestAdapter, RestAdapter authenticatedRestAdapter) {
     mContext = context;
-    mTokenStore = new TokenStore(mContext);
+    sTokenStore = new TokenStore(mContext);
     mBasicRestAdapter = basicRestAdapter;
     mAuthenticatedRestAdapter = authenticatedRestAdapter;
     mSearchListenerList = new ArrayList<>();
@@ -86,7 +86,7 @@ public class DataManager {
   private static RequestInterceptor sAuthenticatedRequestInterceptor = new RequestInterceptor() {
     @Override
     public void intercept(RequestFacade request) {
-      request.addQueryParam("oauth_token", mTokenStore.getAccessToken());
+      request.addQueryParam("oauth_token", sTokenStore.getAccessToken());
       request.addQueryParam("v", FOURSQUARE_VERSION);
       request.addQueryParam("m", SWARM_MODE);
     }
