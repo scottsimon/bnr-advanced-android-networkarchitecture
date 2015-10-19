@@ -28,6 +28,7 @@ public class Venue {
   @SerializedName("verified") private boolean mVerified;
   @SerializedName("location") private Location mLocation;
   @SerializedName("categories") private List<Category> mCategory;
+  @SerializedName("price") private Price mPrice;
 
   public String getId() {
     return mId;
@@ -41,4 +42,7 @@ public class Venue {
     return mLocation.getFormattedAddress();
   }
 
+  public Price getPrice() {
+    return mPrice;
+  }
 }

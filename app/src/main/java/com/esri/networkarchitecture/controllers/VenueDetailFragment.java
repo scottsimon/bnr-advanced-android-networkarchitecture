@@ -35,6 +35,8 @@ import com.esri.networkarchitecture.web.DataManager;
  */
 public class VenueDetailFragment extends Fragment implements VenueCheckInListener {
 
+  private static final String TAG = VenueDetailFragment.class.getSimpleName();
+
   private static final String ARG_VENUE_ID = "VenueDetailFragment.VenueId";
 
   private TextView mVenueNameTextView;
@@ -104,6 +106,16 @@ public class VenueDetailFragment extends Fragment implements VenueCheckInListene
       mCheckInButton.setVisibility(View.VISIBLE);
       mCheckInButton.setOnClickListener(mCheckInClickListener);
     }
+
+//    // Chapter 2 Challenge
+//    Price price = mVenue.getPrice();
+//    if (price != null) {
+//      Log.d(TAG, String.format("price tier: %d", mVenue.getPrice().getTier()));
+//      Log.d(TAG, String.format("price message: %s", mVenue.getPrice().getMessage()));
+//    } else {
+//      // fetch the full venue info...
+//    }
+
   }
 
   @Override

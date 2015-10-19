@@ -29,6 +29,10 @@ public interface VenueInterface {
 
   @FormUrlEncoded
   @POST("/checkins/add")
-  public void venueCheckIn(@Field("venueId") String venueId, Callback<Object> callback);
+  void venueCheckIn(@Field("venueId") String venueId, Callback<Object> callback);
+
+//  // Chapter 2 Challenge
+//  @GET("/venues/{id}")
+//  void venueDetail(@Query("id") String venueId, Callback<Venue> callback);
 
 }
