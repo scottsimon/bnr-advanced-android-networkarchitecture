@@ -17,8 +17,7 @@ package com.esri.networkarchitecture.web;
 
 import com.esri.networkarchitecture.models.VenueSearchResponse;
 import retrofit.Callback;
-import retrofit.http.GET;
-import retrofit.http.Query;
+import retrofit.http.*;
 
 /**
  * Created by scotts on 10/19/15.
@@ -27,5 +26,9 @@ public interface VenueInterface {
 
   @GET("/venues/search")
   void venueSearch(@Query("ll") String latLngString, Callback<VenueSearchResponse> callback);
+
+  @FormUrlEncoded
+  @POST("/checkins/add")
+  public void venueCheckIn(@Field("venueId") String venueId, Callback<Object> callback);
 
 }

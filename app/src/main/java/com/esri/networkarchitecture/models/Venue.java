@@ -29,6 +29,10 @@ public class Venue {
   @SerializedName("location") private Location mLocation;
   @SerializedName("categories") private List<Category> mCategory;
 
+  public String getId() {
+    return mId;
+  }
+
   public String getName() {
     return mName;
   }
