@@ -123,6 +123,14 @@ public class DataManager {
     return sDataManager;
   }
 
+  public static DataManager get(Context context, RestAdapter basicRestAdapter, RestAdapter authenticatedRestAdapter) {
+    if (sDataManager == null) {
+      sDataManager = new DataManager(context.getApplicationContext(), basicRestAdapter, authenticatedRestAdapter);
+    }
+
+    return sDataManager;
+  }
+
   public String getAuthenticationUrl() {
     return Uri.parse(OAUTH_ENDPOINT).buildUpon()
         .appendQueryParameter("client_id", CLIENT_ID)
