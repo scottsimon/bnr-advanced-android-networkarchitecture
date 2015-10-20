@@ -18,6 +18,7 @@ package com.esri.networkarchitecture.controllers;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +27,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.esri.networkarchitecture.R;
 import com.esri.networkarchitecture.listeners.VenueCheckInListener;
+import com.esri.networkarchitecture.models.Price;
 import com.esri.networkarchitecture.models.TokenStore;
 import com.esri.networkarchitecture.models.Venue;
+import com.esri.networkarchitecture.models.VenueStats;
 import com.esri.networkarchitecture.web.DataManager;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by scotts on 10/19/15.
@@ -107,14 +113,22 @@ public class VenueDetailFragment extends Fragment implements VenueCheckInListene
       mCheckInButton.setOnClickListener(mCheckInClickListener);
     }
 
-//    // Chapter 2 Challenge
-//    Price price = mVenue.getPrice();
-//    if (price != null) {
-//      Log.d(TAG, String.format("price tier: %d", mVenue.getPrice().getTier()));
-//      Log.d(TAG, String.format("price message: %s", mVenue.getPrice().getMessage()));
-//    } else {
-//      // fetch the full venue info...
-//    }
+    // Chapter 2 Challenge
+    mDataManager.fetchVenueDetail(mVenue.getId(), new Callback<Venue>() {
+      @Override
+      public void success(Venue venue, Response response) {
+        if (VenueDetailFragment.this.isAdded()) {
+          updateVenueDetails(venue);
+        } else {
+          Log.d(TAG, "Finished fetching details but fragment is not added");
+        }
+      }
+
+      @Override
+      public void failure(RetrofitError error) {
+        // error...
+      }
+    });
 
   }
 
@@ -123,4 +137,21 @@ public class VenueDetailFragment extends Fragment implements VenueCheckInListene
     Toast.makeText(getActivity(), R.string.successful_check_in_message, Toast.LENGTH_SHORT)
         .show();
   }
+
+  private void updateVenueDetails(Venue venue) {
+    Price price = venue.getPrice();
+    if (price != null) {
+      Log.d(TAG, String.format("price tier: %d", price.getTier()));
+      Log.d(TAG, String.format("price message: %s", price.getMessage()));
+    }
+
+    VenueStats stats = venue.getStats();
+    if (stats != null) {
+      Log.d(TAG, String.format("Checkins: %d", stats.getCheckinsCount()));
+      Log.d(TAG, String.format("Users:    %d", stats.getUsersCount()));
+      Log.d(TAG, String.format("Tips:     %d", stats.getTipCount()));
+    }
+
+  }
+
 }

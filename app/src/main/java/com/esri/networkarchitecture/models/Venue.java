@@ -29,6 +29,7 @@ public class Venue {
   @SerializedName("location") private Location mLocation;
   @SerializedName("categories") private List<Category> mCategory;
   @SerializedName("price") private Price mPrice;
+  @SerializedName("stats") private VenueStats mStats;
 
   public String getId() {
     return mId;
@@ -45,4 +46,9 @@ public class Venue {
   public Price getPrice() {
     return mPrice;
   }
+
+  public VenueStats getStats() {
+    return mStats;
+  }
+
 }

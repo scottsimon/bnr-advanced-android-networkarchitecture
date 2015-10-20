@@ -15,6 +15,7 @@
 */
 package com.esri.networkarchitecture.web;
 
+import com.esri.networkarchitecture.models.VenueDetailResponse;
 import com.esri.networkarchitecture.models.VenueSearchResponse;
 import retrofit.Callback;
 import retrofit.http.*;
@@ -27,12 +28,12 @@ public interface VenueInterface {
   @GET("/venues/search")
   void venueSearch(@Query("ll") String latLngString, Callback<VenueSearchResponse> callback);
 
+  // Chapter 2 Challenge
+  @GET("/venues/{VALUE_ID}")
+  void venueDetail(@Path("VALUE_ID") String venueId, Callback<VenueDetailResponse> callback);
+
   @FormUrlEncoded
   @POST("/checkins/add")
   void venueCheckIn(@Field("venueId") String venueId, Callback<Object> callback);
-
-//  // Chapter 2 Challenge
-//  @GET("/venues/{id}")
-//  void venueDetail(@Query("id") String venueId, Callback<Venue> callback);
 
 }

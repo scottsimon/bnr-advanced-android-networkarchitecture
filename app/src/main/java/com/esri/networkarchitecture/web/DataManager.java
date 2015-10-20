@@ -22,6 +22,7 @@ import com.esri.networkarchitecture.listeners.VenueCheckInListener;
 import com.esri.networkarchitecture.listeners.VenueSearchListener;
 import com.esri.networkarchitecture.models.TokenStore;
 import com.esri.networkarchitecture.models.Venue;
+import com.esri.networkarchitecture.models.VenueDetailResponse;
 import com.esri.networkarchitecture.models.VenueSearchResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -96,6 +97,7 @@ public class DataManager {
     if (sDataManager == null) {
       Gson gson = new GsonBuilder()
           .registerTypeAdapter(VenueSearchResponse.class, new VenueListDeserializer())
+          .registerTypeAdapter(VenueDetailResponse.class, new VenueDetailResponseDeserializer())
           .create();
 
       RestAdapter basicRestAdapter = new RestAdapter.Builder()
@@ -183,6 +185,22 @@ public class DataManager {
       @Override
       public void failure(RetrofitError error) {
         Log.e(TAG, "Failed to check in to venue", error);
+      }
+    });
+  }
+
+  public void fetchVenueDetail(String venueId, final Callback<Venue> callback) {
+    VenueInterface venueInterface = mBasicRestAdapter.create(VenueInterface.class);
+    venueInterface.venueDetail(venueId, new Callback<VenueDetailResponse>() {
+      @Override
+      public void success(VenueDetailResponse venueDetailResponse, Response response) {
+        callback.success(venueDetailResponse.getVenue(), response);
+      }
+
+      @Override
+      public void failure(RetrofitError error) {
+        Log.e(TAG, "Failed to fetch venue detail", error);
+        callback.failure(error);
       }
     });
   }
