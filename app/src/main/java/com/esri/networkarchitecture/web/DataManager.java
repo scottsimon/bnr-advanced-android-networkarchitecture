@@ -18,6 +18,7 @@ package com.esri.networkarchitecture.web;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+import com.esri.networkarchitecture.exceptions.UnauthorizedException;
 import com.esri.networkarchitecture.listeners.VenueCheckInListener;
 import com.esri.networkarchitecture.listeners.VenueSearchListener;
 import com.esri.networkarchitecture.models.TokenStore;
@@ -32,6 +33,7 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
+import rx.android.schedulers.AndroidSchedulers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,6 +114,7 @@ public class DataManager {
           .setConverter(new GsonConverter(gson))
           .setLogLevel(RestAdapter.LogLevel.FULL)
           .setRequestInterceptor(sAuthenticatedRequestInterceptor)
+          .setErrorHandler(new RetrofitErrorHandler())
           .build();
 
       sDataManager = new DataManager(context.getApplicationContext(), basicRestAdapter, authenticatedRestAdapter);
@@ -174,21 +177,6 @@ public class DataManager {
     });
   }
 
-  public void checkInToVenue(String venueId) {
-    VenueInterface venueInterface = mAuthenticatedRestAdapter.create(VenueInterface.class);
-    venueInterface.venueCheckIn(venueId, new Callback<Object>() {
-      @Override
-      public void success(Object o, Response response) {
-        notifyCheckInListeners();
-      }
-
-      @Override
-      public void failure(RetrofitError error) {
-        Log.e(TAG, "Failed to check in to venue", error);
-      }
-    });
-  }
-
   public void fetchVenueDetail(String venueId, final Callback<Venue> callback) {
     VenueInterface venueInterface = mBasicRestAdapter.create(VenueInterface.class);
     venueInterface.venueDetail(venueId, new Callback<VenueDetailResponse>() {
@@ -205,6 +193,56 @@ public class DataManager {
     });
   }
 
+  public void checkInToVenue(String venueId) {
+    VenueInterface venueInterface = mAuthenticatedRestAdapter.create(VenueInterface.class);
+
+//    // pre-Chapter 3 implementation
+//    venueInterface.venueCheckIn(venueId, new Callback<Object>() {
+//      @Override
+//      public void success(Object o, Response response) {
+//        notifyCheckInListeners();
+//      }
+//
+//      @Override
+//      public void failure(RetrofitError error) {
+//        Log.e(TAG, "Failed to check in to venue", error);
+//        if (error.getCause() instanceof UnauthorizedException) {
+//          // clear token & prompt user to reauthorize
+//          sTokenStore.setAccessToken(null);
+//          notifyCheckInListenersTokenExpired();
+//        }
+//      }
+//    });
+
+//    // RxJava Observable implementation (Chapter 3 pg 56)
+//    venueInterface.venueCheckIn(venueId)
+//        .observeOn(AndroidSchedulers.mainThread())
+//        .subscribe(new Action1<Object>() {
+//          @Override
+//          public void call(Object o) {
+//            notifyCheckInListeners();
+//          }
+//        }, new Action1<Throwable>() {
+//          @Override
+//          public void call(Throwable throwable) {
+//            Log.d("venueCheckIn", "Have error: " + throwable);
+//            if (throwable instanceof UnauthorizedException) {
+//              sTokenStore.setAccessToken(null);
+//              notifyCheckInListenersTokenExpired();
+//            }
+//          }
+//        });
+
+    // RxJava/Retrolambda implementation (Chapter 3 pg 58)
+    venueInterface.venueCheckIn(venueId)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(
+            result -> notifyCheckInListeners(),
+            error -> handleCheckInException(error)
+        );
+
+  }
+
   //endregion Public methods...
   //region Private methods...
 
@@ -217,6 +255,19 @@ public class DataManager {
   private void notifyCheckInListeners() {
     for (VenueCheckInListener listener : mCheckInListenerList) {
       listener.onVenueCheckInFinished();
+    }
+  }
+
+  private void notifyCheckInListenersTokenExpired() {
+    for (VenueCheckInListener listener : mCheckInListenerList) {
+      listener.onTokenExpired();
+    }
+  }
+
+  private void handleCheckInException(Throwable error) {
+    if (error instanceof UnauthorizedException) {
+      sTokenStore.setAccessToken(null);
+      notifyCheckInListenersTokenExpired();
     }
   }
 

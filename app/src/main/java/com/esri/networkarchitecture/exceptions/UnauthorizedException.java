@@ -13,11 +13,15 @@
 
   email: contracts@esri.com
 */
-package com.esri.networkarchitecture.listeners;
+package com.esri.networkarchitecture.exceptions;
 
 /**
- * Created by scotts on 10/19/15.
+ * Created by scotts on 10/20/15.
  */
-public interface VenueCheckInListener extends AuthenticationListener {
-  void onVenueCheckInFinished();
+public class UnauthorizedException extends RuntimeException {
+
+  public UnauthorizedException(RuntimeException cause) {
+    super(cause);
+  }
+
 }

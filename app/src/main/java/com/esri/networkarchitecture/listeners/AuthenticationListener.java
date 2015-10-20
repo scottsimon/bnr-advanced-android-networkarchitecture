@@ -16,8 +16,8 @@
 package com.esri.networkarchitecture.listeners;
 
 /**
- * Created by scotts on 10/19/15.
+ * To be implemented by any (Activity/Fragment) that makes an authenticated request.
  */
-public interface VenueCheckInListener extends AuthenticationListener {
-  void onVenueCheckInFinished();
+public interface AuthenticationListener {
+  void onTokenExpired();
 }

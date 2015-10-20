@@ -19,6 +19,7 @@ import com.esri.networkarchitecture.models.VenueDetailResponse;
 import com.esri.networkarchitecture.models.VenueSearchResponse;
 import retrofit.Callback;
 import retrofit.http.*;
+import rx.Observable;
 
 /**
  * Created by scotts on 10/19/15.
@@ -32,8 +33,14 @@ public interface VenueInterface {
   @GET("/venues/{VALUE_ID}")
   void venueDetail(@Path("VALUE_ID") String venueId, Callback<VenueDetailResponse> callback);
 
+  // Asynchronous method
+//  @FormUrlEncoded
+//  @POST("/checkins/add")
+//  void venueCheckIn(@Field("venueId") String venueId, Callback<Object> callback);
+
+  // Asynchronous method using RxJava Observable
   @FormUrlEncoded
   @POST("/checkins/add")
-  void venueCheckIn(@Field("venueId") String venueId, Callback<Object> callback);
+  Observable<Object> venueCheckIn(@Field("venueId") String venueId);
 
 }

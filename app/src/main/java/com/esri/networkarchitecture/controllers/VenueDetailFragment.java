@@ -44,6 +44,7 @@ public class VenueDetailFragment extends Fragment implements VenueCheckInListene
   private static final String TAG = VenueDetailFragment.class.getSimpleName();
 
   private static final String ARG_VENUE_ID = "VenueDetailFragment.VenueId";
+  private static final String EXPIRED_DIALOG = "expired_dialog";
 
   private TextView mVenueNameTextView;
   private TextView mVenueAddressTextView;
@@ -70,6 +71,8 @@ public class VenueDetailFragment extends Fragment implements VenueCheckInListene
 
     return fragment;
   }
+
+  //region Fragment overrides
 
   @Nullable
   @Override
@@ -132,11 +135,24 @@ public class VenueDetailFragment extends Fragment implements VenueCheckInListene
 
   }
 
+  //endregion Fragment overrides
+  //region VenueCheckInListener overrides
+
+  @Override
+  public void onTokenExpired() {
+    mCheckInButton.setVisibility(View.GONE);
+    ExpiredTokenDialogFragment dialogFragment = new ExpiredTokenDialogFragment();
+    dialogFragment.show(getFragmentManager(), EXPIRED_DIALOG);
+  }
+
   @Override
   public void onVenueCheckInFinished() {
     Toast.makeText(getActivity(), R.string.successful_check_in_message, Toast.LENGTH_SHORT)
         .show();
   }
+
+  //endregion VenueCheckInListener overrides
+  //region Private methods
 
   private void updateVenueDetails(Venue venue) {
     Price price = venue.getPrice();
@@ -153,5 +169,7 @@ public class VenueDetailFragment extends Fragment implements VenueCheckInListene
     }
 
   }
+
+  //endregion Private methods
 
 }
